@@ -64,7 +64,7 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           source: restaurant_app-linux-amd64
-          target: /opt/restaurant_app
+          target: /opt
 
       - name: Restart systemd service
         uses: appleboy/ssh-action@v0.1.10
@@ -73,5 +73,5 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            sudo chmod +x /opt/restaurant_app
+            sudo chmod +x /opt
             sudo systemctl restart restaurantapp
