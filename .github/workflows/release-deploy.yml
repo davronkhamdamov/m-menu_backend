@@ -36,28 +36,37 @@ jobs:
       - name: Build for ${{ matrix.os }}-${{ matrix.arch }}
         run: |
           GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} go build -o restaurant_app-${{ matrix.suffix }}
-
           sha256sum restaurant_app-${{ matrix.suffix }} > restaurant_app-${{ matrix.suffix }}.sha256
           sha512sum restaurant_app-${{ matrix.suffix }} > restaurant_app-${{ matrix.suffix }}.sha512
 
-      - name: Upload artifact
+      - name: Upload artifact for deploy (only linux-amd64)
         if: matrix.suffix == 'linux-amd64'
         uses: actions/upload-artifact@v4
         with:
           name: linux-amd64-binary
           path: restaurant_app-linux-amd64
 
+      - name: Upload release assets
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            restaurant_app-${{ matrix.suffix }}
+            restaurant_app-${{ matrix.suffix }}.sha256
+            restaurant_app-${{ matrix.suffix }}.sha512
+          token: ${{ secrets.GITHUB_TOKEN }}
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
 
     steps:
-      - name: List files
-        run: ls -laR
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          name: restaurant_app-linux-amd64
+          name: linux-amd64-binary
+
+      - name: Rename downloaded binary
+        run: mv linux-amd64-binary restaurant_app-linux-amd64
 
       - name: Deploy to server via SCP
         uses: appleboy/scp-action@v0.1.4
