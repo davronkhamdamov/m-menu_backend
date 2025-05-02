@@ -10,21 +10,19 @@ jobs:
 
     strategy:
       matrix:
-        os: [linux, windows, linux, linux]
-        arch: [amd64, amd64, arm64, arm]
         include:
           - os: linux
             arch: amd64
             suffix: linux-amd64
-          - os: windows
-            arch: amd64
-            suffix: windows-amd64.exe
           - os: linux
             arch: arm64
             suffix: linux-arm64
           - os: linux
             arch: arm
             suffix: linux-arm
+          - os: windows
+            arch: amd64
+            suffix: windows-amd64.exe
 
     steps:
       - name: Checkout Code
@@ -42,7 +40,7 @@ jobs:
           sha256sum restaurant_app-${{ matrix.suffix }} > restaurant_app-${{ matrix.suffix }}.sha256
           sha512sum restaurant_app-${{ matrix.suffix }} > restaurant_app-${{ matrix.suffix }}.sha512
 
-      - name: Upload Release Assets (no zip!)
+      - name: Upload Release Assets
         uses: softprops/action-gh-release@v1
         with:
           files: |
