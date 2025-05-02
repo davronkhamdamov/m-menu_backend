@@ -42,16 +42,11 @@ jobs:
           sha256sum restaurant_app-${{ matrix.suffix }} > restaurant_app-${{ matrix.suffix }}.sha256
           sha512sum restaurant_app-${{ matrix.suffix }} > restaurant_app-${{ matrix.suffix }}.sha512
 
-          mkdir build
-          cp restaurant_app-${{ matrix.suffix }} build/
-          cp restaurant_app-${{ matrix.suffix }}.sha256 build/
-          cp restaurant_app-${{ matrix.suffix }}.sha512 build/
-          echo "Thanks for downloading! Verify with the provided checksums." > build/README.txt
-
-          zip -r restaurant_app-${{ matrix.suffix }}.zip build/*
-
-      - name: Upload Release Assets
+      - name: Upload Release Assets (no zip!)
         uses: softprops/action-gh-release@v1
         with:
-          files: restaurant_app-${{ matrix.suffix }}.zip
+          files: |
+            restaurant_app-${{ matrix.suffix }}
+            restaurant_app-${{ matrix.suffix }}.sha256
+            restaurant_app-${{ matrix.suffix }}.sha512
           token: ${{ secrets.GH_TOKEN }}
