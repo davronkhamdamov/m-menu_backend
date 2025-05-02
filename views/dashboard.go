@@ -13,7 +13,7 @@ type WeekReport struct {
 	Total uint   `json:"total"`
 }
 type MostPopularFood struct {
-	FoodID     string `json:"food_id"`
+	Id         string `json:"id"`
 	TotalQty   uint   `json:"total_quantity"`
 	Name       string `json:"name"`
 	Image      string `json:"image_url"`
@@ -87,7 +87,7 @@ func GetMostCommonFood(w http.ResponseWriter, r *http.Request) {
 	oneWeekAgo := time.Now().AddDate(0, 0, -7)
 
 	models.DB.Table("order_foods").
-		Select("order_foods.food_id, SUM(order_foods.quantity) as total_qty, order_foods.name_uz as name, order_foods.image as image, order_foods.price as price, order_foods.weight as weight, order_foods.weight_type as weight_type").
+		Select("order_foods.food_id as id, SUM(order_foods.quantity) as total_qty, order_foods.name_uz as name, order_foods.image as image, order_foods.price as price, order_foods.weight as weight, order_foods.weight_type as weight_type").
 		Where("order_foods.created_at >= ?", oneWeekAgo).
 		Group("order_foods.food_id, order_foods.name_uz, order_foods.image, order_foods.price, order_foods.weight, order_foods.weight_type").
 		Order("total_qty DESC").
