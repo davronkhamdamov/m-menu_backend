@@ -45,7 +45,7 @@ func GetTable(w http.ResponseWriter, r *http.Request) {
 		utils.RespondWithError(w, http.StatusNotFound, "Table not found", dbResult.Error.Error())
 		return
 	}
-	url := fmt.Sprintf("https://menu-m.vercel.app/uz/%s", tableID)
+	url := fmt.Sprintf("https://m-menu-front.vercel.app/uz/%s", tableID)
 
 	png, err := qrcode.Encode(url, qrcode.Medium, 256)
 	if err != nil {
