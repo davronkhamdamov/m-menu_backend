@@ -1,4 +1,4 @@
-name: Release Binaries with Checksums
+name: Release Project
 
 on:
   release:
