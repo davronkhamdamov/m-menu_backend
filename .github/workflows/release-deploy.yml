@@ -14,16 +14,6 @@ jobs:
           - os: linux
             arch: amd64
             suffix: linux-amd64
-          - os: linux
-            arch: arm64
-            suffix: linux-arm64
-          - os: linux
-            arch: arm
-            suffix: linux-arm
-          - os: windows
-            arch: amd64
-            suffix: windows-amd64.exe
-
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
