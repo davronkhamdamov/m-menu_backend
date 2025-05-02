@@ -54,9 +54,6 @@ jobs:
         with:
           name: linux-amd64-binary
 
-      - name: Rename downloaded binary
-        run: mv linux-amd64-binary/restaurant_app-linux-amd64 restaurant_app-linux-amd64
-
       - name: List downloaded files
         run: ls -R
 
