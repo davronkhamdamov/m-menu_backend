@@ -40,14 +40,12 @@ jobs:
           sha256sum restaurant_app-${{ matrix.suffix }} > restaurant_app-${{ matrix.suffix }}.sha256
           sha512sum restaurant_app-${{ matrix.suffix }} > restaurant_app-${{ matrix.suffix }}.sha512
 
-      - name: Upload Release Assets
-        uses: softprops/action-gh-release@v1
+      - name: Upload artifact
+        if: matrix.suffix == 'linux-amd64'
+        uses: actions/upload-artifact@v4
         with:
-          files: |
-            restaurant_app-${{ matrix.suffix }}
-            restaurant_app-${{ matrix.suffix }}.sha256
-            restaurant_app-${{ matrix.suffix }}.sha512
-          token: ${{ secrets.GH_TOKEN }}
+          name: linux-amd64-binary
+          path: restaurant_app-linux-amd64
 
   deploy:
     needs: build
