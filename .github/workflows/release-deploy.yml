@@ -48,3 +48,31 @@ jobs:
             restaurant_app-${{ matrix.suffix }}.sha256
             restaurant_app-${{ matrix.suffix }}.sha512
           token: ${{ secrets.GH_TOKEN }}
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event.release.tag_name != ''
+    steps:
+      - name: Download release asset (linux-amd64)
+        uses: actions/download-artifact@v4
+        with:
+          name: restaurant_app-linux-amd64
+
+      - name: Deploy to server via SCP
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          source: restaurant_app-linux-amd64
+          target: /opt/${{ secrets.SERVER_USER }}/restaurant_app
+
+      - name: Run app on remote server
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            systemctl restart restaurantapp
