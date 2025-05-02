@@ -29,8 +29,7 @@ jobs:
           sha256sum restaurant_app-${{ matrix.suffix }} > restaurant_app-${{ matrix.suffix }}.sha256
           sha512sum restaurant_app-${{ matrix.suffix }} > restaurant_app-${{ matrix.suffix }}.sha512
 
-      - name: Upload artifact for deploy (only linux-amd64)
-        if: matrix.suffix == 'linux-amd64'
+      - name: Upload artifact for deploy
         uses: actions/upload-artifact@v4
         with:
           name: linux-amd64-binary
@@ -43,7 +42,7 @@ jobs:
             restaurant_app-${{ matrix.suffix }}
             restaurant_app-${{ matrix.suffix }}.sha256
             restaurant_app-${{ matrix.suffix }}.sha512
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GH_TOKEN }}
 
   deploy:
     needs: build
