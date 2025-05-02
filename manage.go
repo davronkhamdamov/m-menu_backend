@@ -61,7 +61,7 @@ func runserver() {
 	router.HandleFunc("/v1/feedback", views.CreateFeedback).Methods("POST")
 	// Dashboard
 	router.Handle("/v1/dashboard", utils.AuthMiddleware(http.HandlerFunc(views.GetDashboard))).Methods("GET")
-	router.Handle("/v1/common_food", utils.AuthMiddleware(http.HandlerFunc(views.GetMostCommonFood))).Methods("GET")
+	router.HandleFunc("/v1/common_food", views.GetMostCommonFood).Methods("GET")
 
 	fmt.Println("Starting Server http://localhost:8080/")
 	http.ListenAndServe("0.0.0.0:8080", utils.CorsMiddleware(router))
