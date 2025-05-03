@@ -119,6 +119,9 @@ func processOrderFoods(tx *gorm.DB, order *models.Order, request models.Order) e
 		orderFood.WeightType = food.WeightType
 		orderFood.Price = food.Price
 		orderFood.Image = food.ImageUrl
+		orderFood.DescriptionUz = food.DescriptionUz
+		orderFood.DescriptionRu = food.DescriptionRu
+		orderFood.DescriptionEn = food.DescriptionEn
 		total += food.Price * orderFood.Quantity
 		if err := tx.Create(&orderFood).Error; err != nil {
 			return err
@@ -329,7 +332,7 @@ func DownloadOrderExcel(w http.ResponseWriter, r *http.Request) {
 		Scan(&results)
 
 	exporter := utils.NewTaomExcelExporter()
-	headers := []string{"Buyurtman raqami", "Ovqat nomi", "Narxi (so'm)", "Soni", "O'girligi", "Stol raqami", "Vaqt"}
+	headers := []string{"Buyurtma raqami", "Ovqat nomi", "Narxi (so'm)", "Soni", "O'girligi", "Stol raqami", "Vaqt"}
 	exporter.SetHeaders(headers)
 
 	var rows [][]any

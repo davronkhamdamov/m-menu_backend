@@ -11,8 +11,8 @@ import (
 var DB *gorm.DB
 
 func ConnectDB() {
-	dsn := "host=ep-long-violet-a43f1tu5-pooler.us-east-1.aws.neon.tech user=restaurant_owner password=npg_IijM68WRqnUz dbname=restaurant port=5432 TimeZone=Asia/Tashkent"
-	// dsn := "host=localhost user=postgres password=j24xt200 dbname=restaraunt_backend port=5432 TimeZone=Asia/Tashkent"
+	// dsn := "host=ep-long-violet-a43f1tu5-pooler.us-east-1.aws.neon.tech user=restaurant_owner password=npg_IijM68WRqnUz dbname=restaurant port=5432 TimeZone=Asia/Tashkent"
+	dsn := "host=localhost user=postgres password=j24xt200 dbname=restaraunt_backend port=5432 TimeZone=Asia/Tashkent"
 
 	var err error
 	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
@@ -62,7 +62,7 @@ type Category struct {
 	NameRu    string    `json:"name_ru" validate:"required"`
 	NameEn    string    `json:"name_en" validate:"required"`
 	Name      string    `json:"name" gorm:"-"`
-	Foods     []Food    `gorm:"foreignKey:CategoryID" json:"foods"`
+	Foods     []Food    `gorm:"foreignKey:CategoryID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"foods"`
 	CreatedAt time.Time `gorm:"autoCreateTime" json:"created"`
 	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"updated"`
 }
@@ -82,7 +82,7 @@ type Food struct {
 	WeightType    string    `json:"weight_type" validate:"required"`
 	Available     bool      `json:"available" gorm:"default:true" validate:"-"`
 	CategoryID    string    `gorm:"not null" json:"category_id"`
-	Category      Category  `gorm:"foreignKey:CategoryID" json:"-" validate:"-"`
+	Category      Category  `gorm:"foreignKey:CategoryID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"-" validate:"-"`
 	CreatedAt     time.Time `gorm:"autoCreateTime" json:"created"`
 	UpdatedAt     time.Time `gorm:"autoUpdateTime" json:"updated"`
 }
@@ -90,19 +90,19 @@ type Order struct {
 	ID        string      `gorm:"primaryKey;default:gen_random_uuid()" json:"id"`
 	TableID   string      `gorm:"not null" json:"table_id" validate:"required"`
 	OrderId   string      `gorm:"" json:"order_id" validate:"-"`
-	Table     Table       `gorm:"foreignKey:TableID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL" json:"table" validate:"-"`
+	Table     Table       `gorm:"foreignKey:TableID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"table" validate:"-"`
 	UserID    *string     `json:"user_id"`
 	User      User        `gorm:"foreignKey:UserID" json:"-" validate:"-"`
 	Total     uint        `gorm:"not null" json:"total"`
 	Status    string      `gorm:"not null" json:"status"`
 	CreatedAt time.Time   `gorm:"autoCreateTime" json:"created"`
 	UpdatedAt time.Time   `gorm:"autoUpdateTime" json:"updated"`
-	OrderFood []OrderFood `gorm:"foreignKey:OrderID" json:"foods" validate:"-"`
+	OrderFood []OrderFood `gorm:"foreignKey:OrderID;constraint:OnDelete:CASCADE,OnUpdate:CASCADE" json:"foods" validate:"-"`
 }
 type OrderFood struct {
 	ID            string    `gorm:"primaryKey;default:gen_random_uuid()" json:"id"`
-	OrderID       string    `gorm:"not null;constraint:OnDelete:CASCADE,OnUpdate:CASCADE" json:"order_id"`
-	FoodID        string    `gorm:"not null;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"food_id" validate:"required"`
+	OrderID       string    `gorm:"not null" json:"order_id"`
+	FoodID        string    `gorm:"not null" json:"food_id" validate:"required"`
 	Quantity      uint      `gorm:"not null" json:"quantity" validate:"required"`
 	NameUz        string    `json:"name_uz"`
 	NameRu        string    `json:"name_ru"`
@@ -116,15 +116,15 @@ type OrderFood struct {
 	Image         string    `json:"image"`
 	Weight        uint      `json:"weight"`
 	WeightType    string    `json:"weight_type"`
-	Food          Food      `gorm:"foreignKey:FoodID" json:"-" validate:"-"`
-	Order         Order     `gorm:"foreignKey:OrderID" json:"-" validate:"-"`
+	Food          Food      `gorm:"foreignKey:FoodID;constraint:OnDelete:CASCADE,OnUpdate:CASCADE" json:"-" validate:"-"`
+	Order         Order     `gorm:"foreignKey:OrderID;constraint:OnDelete:CASCADE,OnUpdate:CASCADE" json:"-" validate:"-"`
 	CreatedAt     time.Time `gorm:"autoCreateTime" json:"created"`
 	UpdatedAt     time.Time `gorm:"autoUpdateTime" json:"updated"`
 }
 type Feedback struct {
 	ID        string    `gorm:"primaryKey;default:gen_random_uuid()" json:"id"`
 	TableID   string    `gorm:"not null" json:"table_id" validate:"required"`
-	Table     Table     `gorm:"foreignKey:TableID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"table" validate:"-"`
+	Table     Table     `gorm:"foreignKey:TableID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"table" validate:"-"`
 	Feedback  string    `json:"feedback"`
 	Region    string    `json:"region" validate:"required"`
 	Star      uint      `gorm:"type:int;check:star >= 1 AND star <= 5" json:"star" validate:"required,min=1,max=5"`

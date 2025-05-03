@@ -31,7 +31,7 @@ func CreateTable(w http.ResponseWriter, r *http.Request) {
 
 func GetTables(w http.ResponseWriter, r *http.Request) {
 	table := []models.Table{}
-	if dbResult := models.DB.Find(&table); dbResult.Error != nil {
+	if dbResult := models.DB.Order("created_at DESC").Find(&table); dbResult.Error != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, "Something went wrong", dbResult.Error.Error())
 		return
 	}

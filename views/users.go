@@ -36,7 +36,7 @@ func CreateStaff(w http.ResponseWriter, r *http.Request) {
 }
 func GetStaffs(w http.ResponseWriter, r *http.Request) {
 	var staff []models.User
-	if dbResult := models.DB.Find(&staff); dbResult.Error != nil {
+	if dbResult := models.DB.Order("created_at DESC").Find(&staff); dbResult.Error != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, "Internal server error", dbResult.Error.Error())
 		return
 	}

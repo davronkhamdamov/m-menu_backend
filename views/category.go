@@ -51,7 +51,7 @@ func GetCategory(w http.ResponseWriter, r *http.Request) {
 func GetAllCategory(w http.ResponseWriter, r *http.Request) {
 	categories := []models.Category{}
 	lang := r.URL.Query().Get("lang")
-	if dbResult := models.DB.Find(&categories); dbResult.Error != nil {
+	if dbResult := models.DB.Order("created_at DESC").Find(&categories); dbResult.Error != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, "Failed to fetch categories", dbResult.Error.Error())
 		return
 	}

@@ -1,6 +1,7 @@
 package views
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -13,13 +14,14 @@ type WeekReport struct {
 	Total uint   `json:"total"`
 }
 type MostPopularFood struct {
-	Id         string `json:"id"`
-	TotalQty   uint   `json:"total_quantity"`
-	Name       string `json:"name"`
-	Image      string `json:"image_url"`
-	Price      uint   `json:"price"`
-	Weight     uint   `json:"weight"`
-	WeightType string `json:"weight_type"`
+	Id          string `json:"id"`
+	TotalQty    uint   `json:"total_quantity"`
+	Name        string `json:"name"`
+	Image       string `json:"image_url"`
+	Price       uint   `json:"price"`
+	Weight      uint   `json:"weight"`
+	WeightType  string `json:"weight_type"`
+	Description string `json:"description"`
 }
 
 func GetDashboard(w http.ResponseWriter, r *http.Request) {
@@ -83,13 +85,24 @@ func GetDashboard(w http.ResponseWriter, r *http.Request) {
 
 func GetMostCommonFood(w http.ResponseWriter, r *http.Request) {
 	var results []MostPopularFood
+	lang := r.URL.Query().Get("lang")
+	fmt.Println(lang)
+	nameCol := "order_foods.name_uz"
+	nameColDesc := "order_foods.description_uz"
+	if lang == "en" {
+		nameCol = "order_foods.name_en"
+		nameColDesc = "order_foods.description_en"
+	} else if lang == "ru" {
+		nameCol = "order_foods.name_ru"
+		nameColDesc = "order_foods.description_ru"
+	}
 
 	oneWeekAgo := time.Now().AddDate(0, 0, -7)
 
 	models.DB.Table("order_foods").
-		Select("order_foods.food_id as id, SUM(order_foods.quantity) as total_qty, order_foods.name_uz as name, order_foods.image as image, order_foods.price as price, order_foods.weight as weight, order_foods.weight_type as weight_type").
+		Select(fmt.Sprintf("order_foods.food_id as id, SUM(order_foods.quantity) as total_qty, %s as name, order_foods.image as image, order_foods.price as price, order_foods.weight as weight, order_foods.weight_type as weight_type, %s as description", nameCol, nameColDesc)).
 		Where("order_foods.created_at >= ?", oneWeekAgo).
-		Group("order_foods.food_id, order_foods.name_uz, order_foods.image, order_foods.price, order_foods.weight, order_foods.weight_type").
+		Group(fmt.Sprintf("order_foods.food_id, %s, order_foods.image, order_foods.price, order_foods.weight, order_foods.weight_type, %s", nameCol, nameColDesc)).
 		Order("total_qty DESC").
 		Limit(6).
 		Scan(&results)

@@ -27,7 +27,7 @@ func CreateFeedback(w http.ResponseWriter, r *http.Request) {
 }
 func DownloadFeedbackExcel(w http.ResponseWriter, r *http.Request) {
 	var feedbacks []models.Feedback
-	if err := models.DB.Preload("Table").Find(&feedbacks).Error; err != nil {
+	if err := models.DB.Preload("Table").Order("created_at DESC").Find(&feedbacks).Error; err != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, "Failed to fetch data", err.Error())
 		return
 	}
@@ -73,7 +73,7 @@ func GetFeedback(w http.ResponseWriter, r *http.Request) {
 }
 func GetAllFeedback(w http.ResponseWriter, r *http.Request) {
 	categories := []models.Feedback{}
-	if dbResult := models.DB.Preload("Table").Find(&categories); dbResult.Error != nil {
+	if dbResult := models.DB.Preload("Table").Order("created_at DESC").Find(&categories); dbResult.Error != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, "Failed to fetch categories", dbResult.Error.Error())
 		return
 	}

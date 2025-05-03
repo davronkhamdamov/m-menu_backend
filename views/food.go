@@ -39,7 +39,7 @@ func GetFood(w http.ResponseWriter, r *http.Request) {
 func GetAllFood(w http.ResponseWriter, r *http.Request) {
 	foods := []models.Food{}
 	lang := r.URL.Query().Get("lang")
-	if dbResult := models.DB.Find(&foods); dbResult.Error != nil {
+	if dbResult := models.DB.Order("created_at DESC").Find(&foods); dbResult.Error != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, "Failed to get all food", dbResult.Error.Error())
 		return
 	}
@@ -84,7 +84,7 @@ func GetAllFood(w http.ResponseWriter, r *http.Request) {
 func GetCategoriesAndFoods(w http.ResponseWriter, r *http.Request) {
 	var categories []models.Category
 	lang := r.URL.Query().Get("lang")
-	if err := models.DB.Preload("Foods").Find(&categories).Error; err != nil {
+	if err := models.DB.Preload("Foods").Find(&categories).Order("created_at DESC").Error; err != nil {
 		utils.RespondWithError(w, http.StatusInternalServerError, "Error fetching categories and foods", err.Error())
 		return
 	}
