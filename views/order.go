@@ -190,7 +190,6 @@ func GetOrdersForStaff(w http.ResponseWriter, r *http.Request) {
 		utils.RespondWithError(w, http.StatusInternalServerError, "Failed to get orders", err.Error.Error())
 		return
 	}
-	fmt.Println(orders)
 	utils.RespondWithSuccess(w, http.StatusOK, "Orders retrieved successfully", orders)
 }
 

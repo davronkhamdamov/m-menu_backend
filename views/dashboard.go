@@ -86,7 +86,6 @@ func GetDashboard(w http.ResponseWriter, r *http.Request) {
 func GetMostCommonFood(w http.ResponseWriter, r *http.Request) {
 	var results []MostPopularFood
 	lang := r.URL.Query().Get("lang")
-	fmt.Println(lang)
 	nameCol := "order_foods.name_uz"
 	nameColDesc := "order_foods.description_uz"
 	if lang == "en" {

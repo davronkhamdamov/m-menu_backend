@@ -11,8 +11,8 @@ import (
 var DB *gorm.DB
 
 func ConnectDB() {
-	// dsn := "host=ep-long-violet-a43f1tu5-pooler.us-east-1.aws.neon.tech user=restaurant_owner password=npg_IijM68WRqnUz dbname=restaurant port=5432 TimeZone=Asia/Tashkent"
-	dsn := "host=localhost user=postgres password=j24xt200 dbname=restaraunt_backend port=5432 TimeZone=Asia/Tashkent"
+	dsn := "host=ep-long-violet-a43f1tu5-pooler.us-east-1.aws.neon.tech user=restaurant_owner password=npg_IijM68WRqnUz dbname=restaurant port=5432 TimeZone=Asia/Tashkent"
+	// dsn := "host=localhost user=postgres password=j24xt200 dbname=restaraunt_backend port=5432 TimeZone=Asia/Tashkent"
 
 	var err error
 	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
