@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/davronkhamdamov/restaraunt_backend/middleware"
 	"github.com/davronkhamdamov/restaraunt_backend/models"
 	"github.com/davronkhamdamov/restaraunt_backend/utils"
 	"github.com/golang-jwt/jwt/v5"
@@ -179,7 +180,7 @@ func GetOrders(w http.ResponseWriter, r *http.Request) {
 	utils.RespondWithSuccess(w, http.StatusOK, "Orders retrieved successfully", orders)
 }
 func GetOrdersForStaff(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value(utils.UserIDKey)
+	userID := r.Context().Value(middleware.UserIDKey)
 	var orders []models.Order
 	if err := models.DB.
 		Where("status IN ?", []string{"in_process", "pending"}).
@@ -239,7 +240,7 @@ func Orders(w http.ResponseWriter, r *http.Request) {
 func UpdateOrderStatus(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	orderID := vars["id"]
-	userID := r.Context().Value(utils.UserIDKey)
+	userID := r.Context().Value(middleware.UserIDKey)
 
 	var order models.Order
 	if err := models.DB.First(&order, "ID = ?", orderID).Error; err != nil {
@@ -276,7 +277,7 @@ func ReceiveOrder(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	orderID := vars["id"]
 	order := models.Order{}
-	userID := r.Context().Value(utils.UserIDKey)
+	userID := r.Context().Value(middleware.UserIDKey)
 
 	if dbResult := models.DB.First(&order, "ID = ?", orderID).Error; dbResult != nil {
 		utils.RespondWithError(w, http.StatusNotFound, "Order not found", dbResult.Error())
@@ -299,6 +300,20 @@ func ReceiveOrder(w http.ResponseWriter, r *http.Request) {
 	}
 	utils.RespondWithError(w, http.StatusBadRequest, "Failed to order", nil)
 }
+func DeleteAllOrders(w http.ResponseWriter, r *http.Request) {
+	orders := models.Table{}
+
+	if dbResult := models.DB.Where("1 = 1").Delete(&orders); dbResult.Error != nil {
+		utils.RespondWithError(w, http.StatusNotFound, "Orders not found", dbResult.Error.Error())
+		return
+	}
+	if dbResult := models.DB.Delete(&orders); dbResult.Error != nil {
+		utils.RespondWithError(w, http.StatusInternalServerError, "Something went wrong", dbResult.Error.Error())
+		return
+	}
+	utils.RespondWithSuccess(w, http.StatusOK, "Orders deleted successfully", nil)
+}
+
 func DownloadOrderExcel(w http.ResponseWriter, r *http.Request) {
 	type PopularOrder struct {
 		OrderId     string

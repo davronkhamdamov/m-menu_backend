@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/davronkhamdamov/restaraunt_backend/utils"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -11,9 +12,18 @@ import (
 var DB *gorm.DB
 
 func ConnectDB() {
-	dsn := "host=ep-long-violet-a43f1tu5-pooler.us-east-1.aws.neon.tech user=restaurant_owner password=npg_IijM68WRqnUz dbname=restaurant port=5432 TimeZone=Asia/Tashkent"
-	// dsn := "host=localhost user=postgres password=j24xt200 dbname=restaraunt_backend port=5432 TimeZone=Asia/Tashkent"
+	utils.LoadEnv()
 
+	host := utils.GetEnv("DB_HOST")
+	user := utils.GetEnv("DB_USER")
+	password := utils.GetEnv("DB_PASSWORD")
+	dbName := utils.GetEnv("DB_NAME")
+	port := utils.GetEnv("DB_PORT")
+	timeZone := utils.GetEnv("DB_TIMEZONE")
+	dsn := fmt.Sprintf(
+		"host=%s user=%s password=%s dbname=%s port=%s TimeZone=%s",
+		host, user, password, dbName, port, timeZone,
+	)
 	var err error
 	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
