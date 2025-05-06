@@ -88,7 +88,7 @@ type Food struct {
 	DescriptionEn string    `json:"description_en" validate:"required"`
 	Price         uint      `json:"price" validate:"required"`
 	ImageUrl      string    `json:"image_url" validate:"required"`
-	Weight        uint      `json:"weight" validate:"required"`
+	Weight        float32   `json:"weight" validate:"required"`
 	WeightType    string    `json:"weight_type" validate:"required"`
 	Available     bool      `json:"available" gorm:"default:true" validate:"-"`
 	CategoryID    string    `gorm:"not null" json:"category_id"`
@@ -107,6 +107,7 @@ type Order struct {
 	Status    string      `gorm:"not null" json:"status"`
 	CreatedAt time.Time   `gorm:"autoCreateTime" json:"created"`
 	UpdatedAt time.Time   `gorm:"autoUpdateTime" json:"updated"`
+	Feedback  *Feedback   `gorm:"foreignKey:OrderID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL" json:"feedback"`
 	OrderFood []OrderFood `gorm:"foreignKey:OrderID;constraint:OnDelete:CASCADE,OnUpdate:CASCADE" json:"foods" validate:"-"`
 }
 type OrderFood struct {
@@ -124,7 +125,7 @@ type OrderFood struct {
 	Name          string    `json:"name" gorm:"-"`
 	Price         uint      `json:"price"`
 	Image         string    `json:"image"`
-	Weight        uint      `json:"weight"`
+	Weight        float32   `json:"weight"`
 	WeightType    string    `json:"weight_type"`
 	Food          Food      `gorm:"foreignKey:FoodID;constraint:OnDelete:CASCADE,OnUpdate:CASCADE" json:"-" validate:"-"`
 	Order         Order     `gorm:"foreignKey:OrderID;constraint:OnDelete:CASCADE,OnUpdate:CASCADE" json:"-" validate:"-"`
@@ -136,8 +137,10 @@ type Feedback struct {
 	TableID   string    `gorm:"not null" json:"table_id" validate:"required"`
 	Table     Table     `gorm:"foreignKey:TableID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"table" validate:"-"`
 	Feedback  string    `json:"feedback"`
+	OrderID   string    `json:"order_id" validate:"-"`
+	Order     Order     `json:"order" gorm:"foreignKey:OrderID;constraint:OnUpdate:CASCADE, OnDelete:CASCADE;" validate:"-"`
 	Region    string    `json:"region" validate:"required"`
-	Star      uint      `gorm:"type:int;check:star >= 1 AND star <= 5" json:"star" validate:"required,min=1,max=5"`
+	Star      uint      `gorm:"type:int; check:star >= 1 AND star <= 5" json:"star" validate:"required,min=1,max=5"`
 	CreatedAt time.Time `gorm:"autoCreateTime" json:"created"`
 }
 type Login struct {

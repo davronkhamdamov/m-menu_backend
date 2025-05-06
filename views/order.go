@@ -165,6 +165,7 @@ func getOrdersFromDB() ([]models.Order, error) {
 	var orders []models.Order
 	if err := models.DB.
 		Order("Created_At DESC").
+		Preload("Feedback").
 		Preload("Table").
 		Find(&orders).Error; err != nil {
 		return nil, err
@@ -321,6 +322,7 @@ func DownloadOrderExcel(w http.ResponseWriter, r *http.Request) {
 		Price       uint
 		Quantity    uint
 		Weight      uint
+		Region      string
 		WeightType  string
 		TableNumber string
 		CreatedAt   time.Time
@@ -334,6 +336,7 @@ func DownloadOrderExcel(w http.ResponseWriter, r *http.Request) {
 		Select(`orders.order_id,
 			order_foods.name_uz,
 	        order_foods.price,
+	        feedbacks.region,
 	        order_foods.quantity,
 	        order_foods.weight,
 	        order_foods.weight_type,
@@ -341,12 +344,13 @@ func DownloadOrderExcel(w http.ResponseWriter, r *http.Request) {
 	        orders.created_at`).
 		Joins("JOIN orders ON orders.id = order_foods.order_id").
 		Joins("JOIN tables ON tables.id = orders.table_id").
+		Joins("LEFT JOIN feedbacks ON orders.id = feedbacks.order_id").
 		Where("order_foods.created_at >= ?", oneWeekAgo).
 		Order("orders.created_at DESC").
 		Scan(&results)
 
 	exporter := utils.NewTaomExcelExporter()
-	headers := []string{"Buyurtma raqami", "Ovqat nomi", "Narxi (so'm)", "Soni", "O'girligi", "Stol raqami", "Vaqt"}
+	headers := []string{"Buyurtma raqami", "Ovqat nomi", "Mijoz davlati", "Narxi (so'm)", "Soni", "O'girligi", "Stol raqami", "Vaqt"}
 	exporter.SetHeaders(headers)
 
 	var rows [][]any
@@ -354,6 +358,7 @@ func DownloadOrderExcel(w http.ResponseWriter, r *http.Request) {
 		rows = append(rows, []any{
 			r.OrderId,
 			r.NameUz,
+			r.Region,
 			r.Price,
 			r.Quantity,
 			fmt.Sprintf("%d %s", r.Weight, r.WeightType),
