@@ -88,7 +88,7 @@ func NewOrder(w http.ResponseWriter, r *http.Request) {
 		Event: "new_order",
 		Data:  order,
 	})
-	utils.RespondWithSuccess(w, http.StatusCreated, "Order created successfully", nil)
+	utils.RespondWithSuccess(w, http.StatusCreated, "Order created successfully", order)
 }
 
 func createOrder(tx *gorm.DB, order *models.Order) error {
