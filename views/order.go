@@ -110,7 +110,11 @@ func processOrderFoods(tx *gorm.DB, order *models.Order, request models.Order) e
 			Quantity: request.OrderFood[i].Quantity,
 		}
 		var food models.Food
+		var category models.Category
 		if err := tx.First(&food, "ID = ?", orderFood.FoodID).Error; err != nil {
+			return err
+		}
+		if err := tx.First(&category, "ID = ?", food.CategoryID).Error; err != nil {
 			return err
 		}
 		orderFood.Weight = food.Weight
@@ -123,6 +127,9 @@ func processOrderFoods(tx *gorm.DB, order *models.Order, request models.Order) e
 		orderFood.DescriptionUz = food.DescriptionUz
 		orderFood.DescriptionRu = food.DescriptionRu
 		orderFood.DescriptionEn = food.DescriptionEn
+		orderFood.CategoryNameUz = category.NameUz
+		orderFood.CategoryNameRu = category.NameRu
+		orderFood.CategoryNameEn = category.NameEn
 		total += food.Price * orderFood.Quantity
 		if err := tx.Create(&orderFood).Error; err != nil {
 			return err
@@ -317,15 +324,16 @@ func DeleteAllOrders(w http.ResponseWriter, r *http.Request) {
 
 func DownloadOrderExcel(w http.ResponseWriter, r *http.Request) {
 	type PopularOrder struct {
-		OrderId     string
-		NameUz      string
-		Price       uint
-		Quantity    uint
-		Weight      uint
-		Region      string
-		WeightType  string
-		TableNumber string
-		CreatedAt   time.Time
+		OrderId        string
+		NameUz         string
+		CategoryNameUz string
+		Price          uint
+		Quantity       uint
+		Weight         uint
+		Region         string
+		WeightType     string
+		TableNumber    string
+		CreatedAt      time.Time
 	}
 
 	var results []PopularOrder
@@ -337,6 +345,7 @@ func DownloadOrderExcel(w http.ResponseWriter, r *http.Request) {
 			order_foods.name_uz,
 	        order_foods.price,
 	        feedbacks.region,
+	        order_foods.category_name_uz,
 	        order_foods.quantity,
 	        order_foods.weight,
 	        order_foods.weight_type,
@@ -350,7 +359,7 @@ func DownloadOrderExcel(w http.ResponseWriter, r *http.Request) {
 		Scan(&results)
 
 	exporter := utils.NewTaomExcelExporter()
-	headers := []string{"Buyurtma raqami", "Ovqat nomi", "Mijoz davlati", "Narxi (so'm)", "Soni", "O'girligi", "Stol raqami", "Vaqt"}
+	headers := []string{"Buyurtma raqami", "Ovqat nomi", "Ovqat toifasi", "Mijoz davlati", "Narxi (so'm)", "Soni", "O'girligi", "Stol raqami", "Vaqt"}
 	exporter.SetHeaders(headers)
 
 	var rows [][]any
@@ -358,6 +367,7 @@ func DownloadOrderExcel(w http.ResponseWriter, r *http.Request) {
 		rows = append(rows, []any{
 			r.OrderId,
 			r.NameUz,
+			r.CategoryNameUz,
 			r.Region,
 			r.Price,
 			r.Quantity,

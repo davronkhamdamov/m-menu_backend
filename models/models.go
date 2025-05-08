@@ -111,26 +111,30 @@ type Order struct {
 	OrderFood []OrderFood `gorm:"foreignKey:OrderID;constraint:OnDelete:CASCADE,OnUpdate:CASCADE" json:"foods" validate:"-"`
 }
 type OrderFood struct {
-	ID            string    `gorm:"primaryKey;default:gen_random_uuid()" json:"id"`
-	OrderID       string    `gorm:"not null" json:"order_id"`
-	FoodID        string    `gorm:"not null" json:"food_id" validate:"required"`
-	Quantity      uint      `gorm:"not null" json:"quantity" validate:"required"`
-	NameUz        string    `json:"name_uz"`
-	NameRu        string    `json:"name_ru"`
-	NameEn        string    `json:"name_en"`
-	DescriptionUz string    `json:"description_uz" validate:"required"`
-	Description   string    `json:"description" gorm:"-"`
-	DescriptionRu string    `json:"description_ru" validate:"required"`
-	DescriptionEn string    `json:"description_en" validate:"required"`
-	Name          string    `json:"name" gorm:"-"`
-	Price         uint      `json:"price"`
-	Image         string    `json:"image"`
-	Weight        float32   `json:"weight"`
-	WeightType    string    `json:"weight_type"`
-	Food          Food      `gorm:"foreignKey:FoodID;constraint:OnDelete:CASCADE,OnUpdate:CASCADE" json:"-" validate:"-"`
-	Order         Order     `gorm:"foreignKey:OrderID;constraint:OnDelete:CASCADE,OnUpdate:CASCADE" json:"-" validate:"-"`
-	CreatedAt     time.Time `gorm:"autoCreateTime" json:"created"`
-	UpdatedAt     time.Time `gorm:"autoUpdateTime" json:"updated"`
+	ID             string    `gorm:"primaryKey;default:gen_random_uuid()" json:"id"`
+	OrderID        string    `gorm:"not null" json:"order_id"`
+	FoodID         string    `gorm:"not null" json:"food_id" validate:"required"`
+	Quantity       uint      `gorm:"not null" json:"quantity" validate:"required"`
+	NameUz         string    `json:"name_uz"`
+	NameRu         string    `json:"name_ru"`
+	NameEn         string    `json:"name_en"`
+	DescriptionUz  string    `json:"description_uz" validate:"required"`
+	Description    string    `json:"description" gorm:"-"`
+	DescriptionRu  string    `json:"description_ru" validate:"required"`
+	DescriptionEn  string    `json:"description_en" validate:"required"`
+	CategoryNameUz string    `json:"category_name_uz" validate:"required"`
+	CategoryName   string    `json:"category_name" gorm:"-"`
+	CategoryNameRu string    `json:"category_name_ru" validate:"required"`
+	CategoryNameEn string    `json:"category_name_en" validate:"required"`
+	Name           string    `json:"name" gorm:"-"`
+	Price          uint      `json:"price"`
+	Image          string    `json:"image"`
+	Weight         float32   `json:"weight"`
+	WeightType     string    `json:"weight_type"`
+	Food           Food      `gorm:"foreignKey:FoodID;constraint:OnDelete:CASCADE,OnUpdate:CASCADE" json:"-" validate:"-"`
+	Order          Order     `gorm:"foreignKey:OrderID;constraint:OnDelete:CASCADE,OnUpdate:CASCADE" json:"-" validate:"-"`
+	CreatedAt      time.Time `gorm:"autoCreateTime" json:"created"`
+	UpdatedAt      time.Time `gorm:"autoUpdateTime" json:"updated"`
 }
 type Feedback struct {
 	ID        string    `gorm:"primaryKey;default:gen_random_uuid()" json:"id"`
@@ -139,7 +143,7 @@ type Feedback struct {
 	Feedback  string    `json:"feedback"`
 	OrderID   string    `json:"order_id" validate:"-"`
 	Order     Order     `json:"order" gorm:"foreignKey:OrderID;constraint:OnUpdate:CASCADE, OnDelete:CASCADE;" validate:"-"`
-	Region    string    `json:"region" validate:"required"`
+	Region    string    `json:"region" validate:"-"`
 	Star      uint      `gorm:"type:int; check:star >= 1 AND star <= 5" json:"star" validate:"required,min=1,max=5"`
 	CreatedAt time.Time `gorm:"autoCreateTime" json:"created"`
 }
