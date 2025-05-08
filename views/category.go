@@ -28,7 +28,7 @@ func CreateCategory(w http.ResponseWriter, r *http.Request) {
 }
 func GetCategory(w http.ResponseWriter, r *http.Request) {
 	category := models.Category{}
-	lang := r.URL.Query().Get("id")
+	lang := r.URL.Query().Get("lang")
 	vars := mux.Vars(r)
 	foodID := vars["id"]
 	if dbResult := models.DB.Where("ID = ?", foodID).First(&category); dbResult.Error != nil {
